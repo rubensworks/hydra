@@ -80,6 +80,6 @@
 				<action android:name="be.ugent.zeus.hydra.data.services.SchamperDailyService" />
 			</intent-filter>
 		</service>
-		<uses-library android:name="com.google.android.maps" />
+		<!--<uses-library android:name="com.google.android.maps" />-->
 	</application>
 </manifest>
