@@ -6,6 +6,7 @@
 package be.ugent.zeus.hydra.settings;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import be.ugent.zeus.hydra.AbstractSherlockActivity;
@@ -14,6 +15,7 @@ import be.ugent.zeus.hydra.data.caches.AssociationsCache;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
+import com.actionbarsherlock.widget.SearchView.OnQueryTextListener;
 import com.dd.plist.NSArray;
 import com.dd.plist.NSDictionary;
 import com.dd.plist.NSString;
@@ -108,24 +110,22 @@ public class AssociationsFilter extends AbstractSherlockActivity implements AbsL
 
         SearchView searchView = new SearchView(getSupportActionBar().getThemedContext());
 
-        SearchView.OnQueryTextListener queryTextListener = new SearchView.OnQueryTextListener() 
-        {
-            public boolean onQueryTextChange(String newText) 
-            {
+        searchView.setOnQueryTextListener(new OnQueryTextListener() {
+            public boolean onQueryTextChange(String newText) {
                 // this is your adapter that will be filtered
+                Log.i("YOUTIPED", newText);
                 listAdapter.getFilter().filter(newText);
                 return true;
             }
 
-            public boolean onQueryTextSubmit(String query) 
-            {
+            public boolean onQueryTextSubmit(String query) {
                 // this is your adapter that will be filtered
+                Log.i("YOUTIPED", query);
                 listAdapter.getFilter().filter(query);
                 return true;
             }
-        };
-        searchView.setOnQueryTextListener(queryTextListener);
-        
+        });
+
         return true;
     }
 
