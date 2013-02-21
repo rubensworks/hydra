@@ -159,7 +159,6 @@ public class BuildingMap extends AbstractSherlockFragmentActivity implements Goo
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = new SearchView(getSupportActionBar().getThemedContext());
-        
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         
         return true;

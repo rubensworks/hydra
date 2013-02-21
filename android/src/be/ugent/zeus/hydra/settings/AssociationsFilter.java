@@ -7,12 +7,15 @@ package be.ugent.zeus.hydra.settings;
 
 import android.os.Bundle;
 import android.widget.AbsListView;
+import android.widget.ArrayAdapter;
 import be.ugent.zeus.hydra.AbstractSherlockActivity;
 import be.ugent.zeus.hydra.R;
 import be.ugent.zeus.hydra.data.caches.AssociationsCache;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.widget.SearchView;
 import com.dd.plist.NSArray;
 import com.dd.plist.NSDictionary;
-import com.dd.plist.NSObject;
 import com.dd.plist.NSString;
 import com.dd.plist.XMLPropertyListParser;
 import com.emilsjolander.components.stickylistheaders.StickyListHeadersListView;
@@ -28,6 +31,7 @@ public class AssociationsFilter extends AbstractSherlockActivity implements AbsL
     public static final String FILTERED_ACTIVITIES = "FILTERED_ACTIVITIES";
     private int firstVisible;
     private StickyListHeadersListView stickyList;
+    ArrayAdapter<PreferenceAssociation> listAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,8 +72,6 @@ public class AssociationsFilter extends AbstractSherlockActivity implements AbsL
         for (int i = 0; i < assocations.count(); i++) {
             NSDictionary item = (NSDictionary) assocations.objectAtIndex(i);
 
-
-
             String name;
             if (item.objectForKey("fullName") != null) {
                 name = ((NSString) item.objectForKey("fullName")).toString();
@@ -94,8 +96,47 @@ public class AssociationsFilter extends AbstractSherlockActivity implements AbsL
         }
 
 
-        stickyList.setAdapter(new AssociationsFilterListAdapter(this, associationList));
+        listAdapter = new AssociationsFilterListAdapter(this, 0, associationList);
+
+        stickyList.setAdapter(listAdapter);
         stickyList.setSelection(firstVisible);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(final Menu menu) {
+        getSupportMenuInflater().inflate(R.menu.building_search, menu);
+
+        SearchView searchView = new SearchView(getSupportActionBar().getThemedContext());
+
+        SearchView.OnQueryTextListener queryTextListener = new SearchView.OnQueryTextListener() 
+        {
+            public boolean onQueryTextChange(String newText) 
+            {
+                // this is your adapter that will be filtered
+                listAdapter.getFilter().filter(newText);
+                return true;
+            }
+
+            public boolean onQueryTextSubmit(String query) 
+            {
+                // this is your adapter that will be filtered
+                listAdapter.getFilter().filter(query);
+                return true;
+            }
+        };
+        searchView.setOnQueryTextListener(queryTextListener);
+        
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.search:
+                onSearchRequested();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

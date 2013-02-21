@@ -9,36 +9,30 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.Filter;
 import android.widget.TextView;
 import be.ugent.zeus.hydra.R;
 import be.ugent.zeus.hydra.data.caches.AssociationsCache;
 import com.emilsjolander.components.stickylistheaders.StickyListHeadersAdapter;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
-public class AssociationsFilterListAdapter extends BaseAdapter implements StickyListHeadersAdapter {
+public class AssociationsFilterListAdapter extends ArrayAdapter<PreferenceAssociation> implements StickyListHeadersAdapter {
 
-    private ArrayList<PreferenceAssociation> assocations;
     private LayoutInflater inflater;
     private AssociationsCache cache;
+    private List<PreferenceAssociation> associations;
 
-    public AssociationsFilterListAdapter(Context context, ArrayList<PreferenceAssociation> assocations) {
+    public AssociationsFilterListAdapter(Context context, int iets, List<PreferenceAssociation> assocations) {
+        super(context, iets, assocations);
+
+        this.associations = assocations;
         inflater = LayoutInflater.from(context);
-        this.assocations = assocations;
-        
-         cache = AssociationsCache.getInstance(context);
-    }
 
-    @Override
-    public int getCount() {
-        return assocations.size();
-    }
-
-    @Override
-    public Object getItem(int position) {
-        return assocations.get(position);
+        cache = AssociationsCache.getInstance(context);
     }
 
     @Override
@@ -61,18 +55,18 @@ public class AssociationsFilterListAdapter extends BaseAdapter implements Sticky
                     CheckBox cb = (CheckBox) v;
                     PreferenceAssociation association = (PreferenceAssociation) cb.getTag();
                     association.setSelected(cb.isChecked());
-                    
+
                     HashSet<String> checked = cache.get("associations");;
-                    if(checked == null) {
+                    if (checked == null) {
                         checked = new HashSet<String>();
                     }
-                    
-                    if(cb.isChecked()) {
+
+                    if (cb.isChecked()) {
                         checked.add(association.getInternalName());
                     } else {
                         checked.remove(association.getInternalName());
                     }
-                    
+
                     cache.put("associations", checked);
                 }
             });
@@ -81,7 +75,7 @@ public class AssociationsFilterListAdapter extends BaseAdapter implements Sticky
             holder = (ViewHolder) convertView.getTag();
         }
 
-        PreferenceAssociation preferenceAssociation = assocations.get(position);
+        PreferenceAssociation preferenceAssociation = super.getItem(position);
 
         holder.checkBox.setText(preferenceAssociation.getName());
         holder.checkBox.setChecked(preferenceAssociation.isSelected());
@@ -103,22 +97,50 @@ public class AssociationsFilterListAdapter extends BaseAdapter implements Sticky
             holder = (HeaderViewHolder) convertView.getTag();
         }
 
-        holder.header_text.setText(assocations.get(position).getParentAssociation());
+        holder.header_text.setText(super.getItem(position).getParentAssociation());
         return convertView;
     }
 
     //remember that these have to be static, postion=1 should walys return the same Id that is.
     @Override
     public long getHeaderId(int position) {
-        return assocations.get(position).getParentAssociation().hashCode();
+        return super.getItem(position).getParentAssociation().hashCode();
     }
 
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                associations = (List<PreferenceAssociation>) results.values;
+                AssociationsFilterListAdapter.this.notifyDataSetChanged();
+            }
+
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                List<PreferenceAssociation> filteredResults = new ArrayList<PreferenceAssociation>();
+
+                for (PreferenceAssociation preferenceAssociation : associations) {
+                    if(preferenceAssociation.getName().contains(constraint)) {
+                        filteredResults.add(preferenceAssociation);
+                    }
+                }
+                
+                FilterResults results = new FilterResults();
+                results.values = filteredResults;
+
+                return results;
+            }
+        };
+    }
+    
     class HeaderViewHolder {
 
         TextView header_text;
     }
 
     class ViewHolder {
+
         CheckBox checkBox;
         String internalName;
     }

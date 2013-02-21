@@ -46,9 +46,12 @@
         <activity android:name=".settings.AssociationsFilter"
                   android:configChanges="screenSize|orientation" >
             <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
                 <action android:name=".settings.AssociationsFilter" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+            <meta-data android:name="android.app.searchable"
+                       android:resource="@xml/resto_search" />
         </activity>
         
         <activity android:name=".News"
