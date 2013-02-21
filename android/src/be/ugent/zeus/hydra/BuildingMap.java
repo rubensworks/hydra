@@ -14,6 +14,7 @@ import be.ugent.zeus.hydra.data.caches.RestoCache;
 import be.ugent.zeus.hydra.data.services.HTTPIntentService;
 import be.ugent.zeus.hydra.data.services.RestoService;
 import be.ugent.zeus.hydra.ui.map.DirectionMarker;
+import be.ugent.zeus.hydra.ui.map.suggestions.BuildingSuggestionsAdapter;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
@@ -161,6 +162,7 @@ public class BuildingMap extends AbstractSherlockFragmentActivity implements Goo
         SearchView searchView = new SearchView(getSupportActionBar().getThemedContext());
         
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setSuggestionsAdapter(new BuildingSuggestionsAdapter(this, searchManager.getSearchableInfo(getComponentName()), searchView));
         
         return true;
     }
