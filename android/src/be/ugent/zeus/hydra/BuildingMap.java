@@ -1,6 +1,8 @@
 package be.ugent.zeus.hydra;
 
+import android.app.DownloadManager;
 import android.app.SearchManager;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -15,6 +17,7 @@ import be.ugent.zeus.hydra.data.services.HTTPIntentService;
 import be.ugent.zeus.hydra.data.services.RestoService;
 import be.ugent.zeus.hydra.ui.map.DirectionMarker;
 import be.ugent.zeus.hydra.ui.map.suggestions.BuildingSuggestionsAdapter;
+import be.ugent.zeus.hydra.ui.map.suggestions.TableBuildings;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
@@ -135,6 +138,9 @@ public class BuildingMap extends AbstractSherlockFragmentActivity implements Goo
     private void addRestos(boolean synced) {
         final List<Resto> restos = RestoCache.getInstance(BuildingMap.this).getAll();
         if (restos.size() > 0) {
+
+
+
             for (Resto resto : restos) {
                 MarkerOptions markerOptions = new MarkerOptions()
                     .position(new LatLng(resto.latitude, resto.longitude))
@@ -142,8 +148,15 @@ public class BuildingMap extends AbstractSherlockFragmentActivity implements Goo
 
                 Marker marker = map.addMarker(markerOptions);
                 markerMap.put(resto.name, marker);
+
+                ContentValues values = new ContentValues();
+                values.put(TableBuildings.Buildings.NAME, resto.name);
+                values.put(TableBuildings.Buildings.DISTANCE, "3");
+                getContentResolver().insert(TableBuildings.Buildings.CONTENT_URI, values);
             }
+
         } else {
+
             if (!synced) {
                 Intent intent = new Intent(this, RestoService.class);
                 intent.putExtra(HTTPIntentService.RESULT_RECEIVER_EXTRA, receiver);
@@ -160,11 +173,11 @@ public class BuildingMap extends AbstractSherlockFragmentActivity implements Goo
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = new SearchView(getSupportActionBar().getThemedContext());
-        
+
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setSuggestionsAdapter(new BuildingSuggestionsAdapter(this, searchManager.getSearchableInfo(getComponentName()), searchView));
-        
-        return true;
+
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -184,7 +197,14 @@ public class BuildingMap extends AbstractSherlockFragmentActivity implements Goo
         }
     }
 
-    private void doSearch(String queryStr) {
+    private void doSearch(final String queryStr) {
+
+        this.runOnUiThread(new Runnable() {
+            public void run() {
+                Toast.makeText(BuildingMap.this, queryStr, Toast.LENGTH_SHORT).show();
+            }
+        });
+        
         if (markerMap.containsKey(queryStr)) {
             Marker foundMarker = markerMap.get(queryStr);
             updateMarkerDistance(foundMarker);
@@ -192,11 +212,11 @@ public class BuildingMap extends AbstractSherlockFragmentActivity implements Goo
             map.moveCamera(CameraUpdateFactory.newLatLng(foundMarker.getPosition()));
 
         } else {
-            this.runOnUiThread(new Runnable() {
-                public void run() {
-                    Toast.makeText(BuildingMap.this, R.string.no_restos_found, Toast.LENGTH_SHORT).show();
-                }
-            });
+//            this.runOnUiThread(new Runnable() {
+//                public void run() {
+//                    Toast.makeText(BuildingMap.this, R.string.resto_no_search_result, Toast.LENGTH_SHORT).show();
+//                }
+//            });
         }
     }
 

@@ -149,5 +149,11 @@
             android:value="@string/maps_api_key"/>
         
         <uses-library android:name="com.google.android.maps" />
+        
+        <provider
+            android:name=".ui.map.suggestions.BuildingSuggestionProvider"
+            android:authorities="be.ugent.zeus.hydra.ui.map.suggestions.BuildingSuggestionProvider" />
+
+        
     </application>
 </manifest>

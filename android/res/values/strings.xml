@@ -59,8 +59,9 @@
     <string name="resto_show_map">Toon restos op kaart</string>
     <string name="resto_about">Over</string>
     <string name="resto_update_failed">De resto\'s konden niet geladen worden.</string>
-    <string name="menu_unavailable">Sorry, het menu is momenteel niet beschikbaar. Gelieve later opnieuw te proberen.</string>
-    <string name="no_restos_found">Sorry, de lijst met resto\'s kon niet worden opgehaald van de webservice. Gelieve later opnieuw te proberen.</string>
+    <string name="menu_unavailable">Het menu is momenteel niet beschikbaar. Gelieve later opnieuw te proberen.</string>
+    <string name="no_restos_found">De lijst met resto\'s kon niet worden opgehaald van de webservice. Gelieve later opnieuw te proberen.</string>
+    <string name="resto_no_search_result">Resto niet gevonden</string>
     <string name="legend">Legende</string>
     <string name="legend_swiping">Je kan het menu voor de volgende dagen bekijken door naar links te swipen.</string>
     <string name="resto_search_label"></string>
