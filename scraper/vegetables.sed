@@ -1,4 +1,7 @@
 #n
+#####
+# Tested with GNU sed, run with -r flag.
+#####
 1,/Vlees\/vis\/vegetarisch/d
 /Aanbevolen menu:/,$d
 /<tr style/{

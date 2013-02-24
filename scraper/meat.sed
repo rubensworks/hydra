@@ -1,3 +1,6 @@
+#####
+# Tested with GNU sed, run with -r flag.
+#####
 s/(.*)underline(.*)€/\1\2R €/g
 s/<[^u][^>]*>//g
 s/€ ([0-9],[0-9][0-9]) +\- +([A-Z])/EUR \1 - \2/g
